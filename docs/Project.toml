@@ -1,3 +1,3 @@
 [deps]
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
-IterativelyHypergraphEmbedding = "f24a19d1-eb41-47b6-9c56-1b0435cfef2a"
+IterativelyHypergraphEmbedding = "8a2dbee8-653f-4d6e-922e-a0bff71ae66b"
