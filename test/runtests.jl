@@ -13,6 +13,7 @@ using Test
   @test size(hn_vec) == (dims, nhv(h))
   @test size(he_vec) == (dims, nhe(h))
 
+  # Test that the hypernodes and hyperedges are embedded in the hypersphere.
   for vec in eachcol(hn_vec)
     @test abs(norm(vec) - 1) < 1e-8
   end
