@@ -17,8 +17,7 @@ Note:
 
 ## Refer
 - [埋め込みベクトル間の類似度に基づく高速なハイパーグラフクラスタリング](https://www.jstage.jst.go.jp/article/jsaikbs/123/0/123_10/_article/-char/ja/)
-
-I plan to submit a paper in English in the near future.
+- [High-Speed and Noise-Robust Embedding of Hypergraphs Based on Double-Centered Incidence Matrix](https://www.springerprofessional.de/en/high-speed-and-noise-robust-embedding-of-hypergraphs-based-on-do/19984222)
 
 ## Contribution
 Fork and send Pull Request.
