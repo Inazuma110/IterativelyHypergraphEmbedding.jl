@@ -12,13 +12,14 @@ As large as possible is better.
 * ϵ : Convergence condition.
 """
 
+
 function iteratively_hypergraph_embedding(h::Hypergraph, dims::Int=2,
-    max_epoch::Int=10000, ϵ::Float64=1e-8)
+    max_epoch::Int=10000, ϵ::Float64=1e-8, he_vec=nothing, hn_vec=nothing)
   @assert length(get_connected_components(h)) == 1 "Not Connected."
   N = nhv(h)
   M = nhe(h)
-  he_vec=rand(Uniform(-1, 1), dims, M)
-  hn_vec=rand(Uniform(-1, 1), dims, N)
+  if isnothing(he_vec) he_vec=rand(Uniform(-1, 1), dims, M) end
+  if isnothing(hn_vec) hn_vec=rand(Uniform(-1, 1), dims, N) end
   foreach(normalize!, eachcol(he_vec))
   foreach(normalize!, eachcol(hn_vec))
   old_sum_dot = Inf
