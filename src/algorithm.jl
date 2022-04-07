@@ -1,3 +1,4 @@
+using Random
 """
   iteratively_hypergraph_embedding(h::Hypergraph; dims=2, epoch=10000)
 
@@ -12,13 +13,24 @@ As large as possible is better.
 * ϵ : Convergence condition.
 """
 
-function iteratively_hypergraph_embedding(h::Hypergraph, dims::Int=2,
-    max_epoch::Int=10000, ϵ::Float64=1e-8)
-  @assert length(get_connected_components(h)) == 1 "Not Connected."
+
+function iteratively_hypergraph_embedding(h::Hypergraph; dims::Int=2,
+    max_epoch::Int=10000, ϵ::Float64=1e-8, seed=nothing,
+    hn_vec=nothing,
+    he_vec=nothing,
+    fast=true
+    )
+  # @assert length(get_connected_components(h)) == 1 "Not Connected."
   N = nhv(h)
   M = nhe(h)
-  he_vec=rand(Uniform(-1, 1), dims, M)
-  hn_vec=rand(Uniform(-1, 1), dims, N)
+  if !isnothing(seed) Random.seed!(seed) end
+  if isnothing(hn_vec) hn_vec = rand(Uniform(-1, 1), dims, nhv(h)) end
+  if isnothing(he_vec) he_vec = rand(Uniform(-1, 1), dims, nhe(h)) end
+
+  if !fast
+    return use_double_centered_matrix(h, hn_vec, he_vec, max_epoch, ϵ)
+  end
+
   foreach(normalize!, eachcol(he_vec))
   foreach(normalize!, eachcol(hn_vec))
   old_sum_dot = Inf
@@ -61,4 +73,35 @@ function iteratively_hypergraph_embedding(h::Hypergraph, dims::Int=2,
   end
 
   return hn_vec, he_vec
+end
+
+function use_double_centered_matrix(h::Hypergraph, hn_vec, he_vec, max_epoch, ϵ)
+    inc_mat = deepcopy(h[:, :])
+    inc_mat[inc_mat .=== nothing] .= 0
+    f(mat)::Matrix{Real} = mat
+    double_centerd_mat = double_centering(f(inc_mat))
+    old_sum_dot = Inf
+
+    for e in 1:max_epoch
+      tmp = deepcopy(he_vec)
+      he_vec = (double_centerd_mat' * hn_vec')'
+      hn_vec = (double_centerd_mat * tmp')'
+      new_sum_dot = sum(dot.(eachcol(he_vec), eachcol(tmp)))
+      foreach(normalize!, eachcol(he_vec))
+      foreach(normalize!, eachcol(hn_vec))
+      if abs(new_sum_dot - old_sum_dot) < ϵ
+        break
+      end
+      old_sum_dot = new_sum_dot
+    end
+
+    return hn_vec, he_vec
+end
+
+function double_centering(mat::Matrix{Real})::Matrix{Real}
+  n = size(mat)[1]
+  m = size(mat)[2]
+  jₙ = Matrix(I, n, n) - ones(n, n) / n
+  jₘ = Matrix(I, m, m) - ones(m, m) / m
+  return jₙ * mat * jₘ
 end

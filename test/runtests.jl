@@ -9,7 +9,7 @@ using Test
   add_hyperedge!(h, vertices=Dict(1=>1, 2=>1, 3=>1))
   add_hyperedge!(h, vertices=Dict(3=>1, 4=>1))
   dims = 10
-  hn_vec, he_vec = iteratively_hypergraph_embedding(h, dims)
+  hn_vec, he_vec = iteratively_hypergraph_embedding(h, dims=dims)
   @test size(hn_vec) == (dims, nhv(h))
   @test size(he_vec) == (dims, nhe(h))
 
