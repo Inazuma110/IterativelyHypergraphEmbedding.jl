@@ -13,14 +13,12 @@ As large as possible is better.
 * ϵ : Convergence condition.
 """
 
-
 function iteratively_hypergraph_embedding(h::Hypergraph; dims::Int=2,
     max_epoch::Int=10000, ϵ::Float64=1e-8, seed=nothing,
     hn_vec=nothing,
     he_vec=nothing,
     fast=true
     )
-  # @assert length(get_connected_components(h)) == 1 "Not Connected."
   N = nhv(h)
   M = nhe(h)
   if !isnothing(seed) Random.seed!(seed) end
