@@ -1,4 +1,5 @@
 using Random
+using ProgressMeter
 """
   iteratively_hypergraph_embedding(h::Hypergraph; dims=2, epoch=10000)
 
@@ -33,7 +34,7 @@ function iteratively_hypergraph_embedding(h::Hypergraph; dims::Int=2,
   foreach(normalize!, eachcol(hn_vec))
   old_sum_dot = Inf
 
-  for e in 1:max_epoch
+  @showprogress for e in 1:max_epoch
     for d in 1:dims hn_vec[d, :] .-= mean(hn_vec[d, :]) end
     he_vec_new = zeros(dims, M)
     for he in 1:M
@@ -102,4 +103,28 @@ function double_centering(mat::Matrix{Real})::Matrix{Real}
   jₙ = Matrix(I, n, n) - ones(n, n) / n
   jₘ = Matrix(I, m, m) - ones(m, m) / m
   return jₙ * mat * jₘ
+end
+
+function visualize_anime(h; epoch=1000, interval=10, seed=nothing,
+    hn_vec=nothing, he_vec=nothing
+  )
+  Plots.plot()
+  if isnothing(seed) seed = 0 end
+  if isnothing(hn_vec) hn_vec = rand(Uniform(-1, 1), 2, nhv(h)) end
+  if isnothing(he_vec) he_vec = rand(Uniform(-1, 1), 2, nhe(h)) end
+  Random.seed!(seed)
+  anim = @animate for i in 1:interval:epoch
+    x, y = iteratively_hypergraph_embedding(h, dims=2, seed=seed, fast=true, max_epoch=i)
+    Plots.scatter(x[1, :], x[2, :], label="HN", legend=:best)
+    Plots.scatter!(2y[1, :], 2y[2, :], label="HE")
+    for hn in 1:nhv(h)
+      for he in keys(gethyperedges(h, hn))
+        Plots.plot!([x[1, hn], 2y[1, he]], [x[2, hn], 2y[2, he]], color="gray", label="")
+      end
+    end
+    Plots.plot!(sin.(0:0.01:2π), cos.(0:0.01:2π), ls=:dot, label="", color="gray")
+    Plots.plot!(2sin.(0:0.01:2π), 2cos.(0:0.01:2π), ls=:dot, label="", color="gray")
+  end
+
+  return anim
 end
