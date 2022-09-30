@@ -1,5 +1,6 @@
 using Random
 using ProgressMeter
+
 """
   iteratively_hypergraph_embedding(h::Hypergraph; dims=2, epoch=10000)
 
@@ -13,7 +14,6 @@ Time complexity is O(`epoch` * `dims` * ∑ᵥdeg(v)).
 As large as possible is better.
 * ϵ : Convergence condition.
 """
-
 function iteratively_hypergraph_embedding(h::Hypergraph; dims::Int=2,
     max_epoch::Int=10000, ϵ::Float64=1e-8, seed=nothing,
     hn_vec=nothing,
@@ -49,6 +49,7 @@ function iteratively_hypergraph_embedding(h::Hypergraph; dims::Int=2,
     for d in 1:dims he_vec_new[d, :] .-= mean(he_vec_new[d, :]) end
     new_sum_dot = sum(dot.(eachcol(he_vec), eachcol(he_vec_new)))
     foreach(normalize!, eachcol(he_vec_new))
+    he_vec = deepcopy(he_vec_new)
 
     for d in 1:dims he_vec_new[d, :] .-= mean(he_vec_new[d, :]) end
     hn_vec_new = zeros(dims, N)
@@ -64,7 +65,6 @@ function iteratively_hypergraph_embedding(h::Hypergraph; dims::Int=2,
     foreach(normalize!, eachcol(hn_vec_new))
 
     hn_vec = deepcopy(hn_vec_new)
-    he_vec = deepcopy(he_vec_new)
 
     if abs(new_sum_dot - old_sum_dot) < ϵ
       break
