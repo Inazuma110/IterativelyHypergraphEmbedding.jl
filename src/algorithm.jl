@@ -49,21 +49,22 @@ function iteratively_hypergraph_embedding(h::Hypergraph; dims::Int=2,
     for d in 1:dims he_vec_new[d, :] .-= mean(he_vec_new[d, :]) end
     new_sum_dot = sum(dot.(eachcol(he_vec), eachcol(he_vec_new)))
     foreach(normalize!, eachcol(he_vec_new))
-    he_vec = deepcopy(he_vec_new)
 
-    for d in 1:dims he_vec[d, :] .-= mean(he_vec[d, :]) end
+    for d in 1:dims he_vec_new[d, :] .-= mean(he_vec_new[d, :]) end
     hn_vec_new = zeros(dims, N)
     for hn in 1:N
       hes = keys(gethyperedges(h, hn))
       dᵥ = length(hes)
       for he in hes
         gᵣ = length(getvertices(h, he))
-        hn_vec_new[:, hn] += he_vec[:, he]
+        hn_vec_new[:, hn] += he_vec_new[:, he]
       end
     end
     for d in 1:dims hn_vec_new[d, :] .-= mean(hn_vec_new[d, :]) end
     foreach(normalize!, eachcol(hn_vec_new))
+
     hn_vec = deepcopy(hn_vec_new)
+    he_vec = deepcopy(he_vec_new)
 
     if abs(new_sum_dot - old_sum_dot) < ϵ
       break
