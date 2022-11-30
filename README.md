@@ -16,7 +16,8 @@ Note:
 `h` must be a reachable.
 
 This figure shows a hypergraph constructed from Cora's co-citation network and embedded in three dimensions by this algorithm.
-![image](https://user-images.githubusercontent.com/31335755/204723113-f24665f7-bd0f-4401-838c-1805a76dfc52.png)
+
+![image](https://user-images.githubusercontent.com/31335755/204692330-81b9a0c2-cb46-40ee-83a8-87a94b8aa9ba.gif)
 
 
 
